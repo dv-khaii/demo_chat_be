@@ -6,7 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import co.jp.xeex.chat.base.RequestBase;
-import co.jp.xeex.chat.domains.taskmngr.task.dto.OrderByDto;
+import co.jp.xeex.chat.domains.taskmngr.dto.OrderFieldDto;
+import co.jp.xeex.chat.domains.taskmngr.dto.SelectFilterDto;
 import co.jp.xeex.chat.validation.DtoValidateConsts;
 import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.Pattern;
@@ -26,11 +27,11 @@ public class GetTaskRequest extends RequestBase {
     public String groupId = StringUtils.EMPTY;
 
     /**
-     * Search value
+     * Search text value
      * Get all when empty or null
      */
     @Nullable
-    public String searchValue = StringUtils.EMPTY;
+    public String searchText = StringUtils.EMPTY;
 
     /**
      * Total task per page
@@ -42,11 +43,17 @@ public class GetTaskRequest extends RequestBase {
      * Client show task data with page
      */
     @Nullable
-    public Integer page = 1;
+    public Integer pageIdx = 1;
+
+    /**
+     * The filter used to select specific tasks.
+     */
+    @Nullable
+    public SelectFilterDto filter = new SelectFilterDto();
 
     /**
      * Detail order by
      */
     @Nullable
-    public List<OrderByDto> orderBys = new ArrayList<>();
+    public List<OrderFieldDto> orderFieldList = new ArrayList<>();
 }

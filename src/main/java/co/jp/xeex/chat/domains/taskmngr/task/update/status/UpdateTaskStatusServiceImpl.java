@@ -1,11 +1,13 @@
 package co.jp.xeex.chat.domains.taskmngr.task.update.status;
 
+import org.springframework.stereotype.Service;
+
 import co.jp.xeex.chat.base.ServiceBaseImpl;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskStatus;
 import co.jp.xeex.chat.entity.Task;
 import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.repository.TaskRepository;
-
-import org.springframework.stereotype.Service;
+import co.jp.xeex.chat.util.DateTimeUtil;
 
 /**
  * UpdateTaskStatusServiceImpl
@@ -40,7 +42,12 @@ public class UpdateTaskStatusServiceImpl extends ServiceBaseImpl<UpdateTaskStatu
             throw new BusinessException(UPDATE_TASK_STATUS_ERR_PERMISSION_DENIED, in.lang);
         }
 
-        // Update priority
+        //v_long: in case change status from unfinished -> completed
+        //needs to update end date (according to current)
+        if(in.taskStatus==TaskStatus.DONE){
+            task.setDueDate(DateTimeUtil.getCurrentTimestamp());
+        }
+        //Update priority
         task.setTaskStatus(in.taskStatus);
         taskRepo.saveAndFlush(task);
 

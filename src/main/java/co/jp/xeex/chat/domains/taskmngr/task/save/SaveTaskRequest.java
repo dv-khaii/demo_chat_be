@@ -8,8 +8,8 @@ import org.hibernate.validator.constraints.Length;
 
 import co.jp.xeex.chat.base.RequestBase;
 import co.jp.xeex.chat.domains.file.dto.FileDto;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskPriority;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskStatus;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskPriority;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskStatus;
 import co.jp.xeex.chat.validation.DtoValidateConsts;
 import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.NotEmpty;
@@ -53,7 +53,7 @@ public class SaveTaskRequest extends RequestBase {
 
     @Nullable
     public TaskPriority taskPriority;
-
+    
     @Nullable
     public List<FileDto> taskFiles = new ArrayList<>();
 }

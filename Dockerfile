@@ -20,8 +20,11 @@ RUN ./gradlew
 # Copy the rest of the project
 COPY . .
 RUN chmod -R 777 ./
+# Download all needed dependencies for building offline
+RUN gradle wrapper
+
 # Build the application
-RUN ./gradlew bootJar --no-daemon
+RUN ./gradlew bootJar
 
 # Use the official openjdk image for a lean production stage of our multi-stage build
 FROM openjdk:17-jdk-slim
@@ -30,14 +33,14 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the jar file from the build stage
-COPY --from=build /app/build/libs/*.jar xeex_chat.jar
+COPY --from=build /app/build/libs/*.jar xeex_collab.jar
 COPY --from=build /app/.env .env
+COPY --from=build /app/keystore.p12 keystore.p12
 # Set the required environment variables
-ENV APP_TILTE="Chat Application"
+ENV APP_TILTE="Collab Application"
 ENV APP_VERSION="1.0.0"
-
 # ... add the rest of your environment variables here ...
 
 # Run the application
 EXPOSE 8080
-CMD ["java", "-jar", "xeex_chat.jar"]
+CMD ["java", "-jar", "xeex_collab.jar"]

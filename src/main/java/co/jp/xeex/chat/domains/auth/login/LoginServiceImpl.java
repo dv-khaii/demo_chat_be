@@ -1,10 +1,12 @@
 package co.jp.xeex.chat.domains.auth.login;
 
+import org.springframework.stereotype.Service;
+
 import co.jp.xeex.chat.base.ServiceBaseImpl;
 import co.jp.xeex.chat.domains.chat.ChatService;
 import co.jp.xeex.chat.domains.chatmngr.service.UserService;
-import co.jp.xeex.chat.entity.User;
 import co.jp.xeex.chat.encryption.EncodeService;
+import co.jp.xeex.chat.entity.User;
 import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.repository.UserRepository;
 import co.jp.xeex.chat.token.JwtTokenService;
@@ -14,8 +16,6 @@ import co.jp.xeex.chat.util.DateTimeUtil;
 import co.jp.xeex.chat.util.EnvironmentUtil;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-
-import org.springframework.stereotype.Service;
 
 /**
  * LoginServiceImpl
@@ -118,6 +118,12 @@ public class LoginServiceImpl extends ServiceBaseImpl<LoginRequest, LoginRespons
             @Override
             public TokenType getTokenType() {
                 return tokenType;
+            }
+
+            @Override
+            public String[] getRoles() {
+                // Go to Db get roles list to create token
+                return new String[0];
             }
         });
     }

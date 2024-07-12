@@ -1,7 +1,6 @@
 package co.jp.xeex.chat.token;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -46,7 +45,7 @@ public interface JwtTokenService {
      * @param token the token to get the user role ids from
      * @return the user role ids
      */
-    List<Long> getUserRoleIds(String token);
+    String[] getUserRoleIds(String token);
 
     /**
      * Get the expiration date from the token

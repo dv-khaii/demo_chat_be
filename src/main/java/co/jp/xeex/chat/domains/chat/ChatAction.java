@@ -23,6 +23,11 @@ public enum ChatAction {
      */
     DELETE_CHAT,
     /*
+     * DELETE_THREAD_CHAT: when a user delete last repply message
+     * and main repply message has been deleted
+     */
+    DELETE_THREAD_CHAT,
+    /*
      * EDIT_DELETE_CHAT: when a user delete a message
      * exist repply message
      */

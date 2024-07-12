@@ -10,7 +10,6 @@ import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.domains.chatmngr.group.dto.ChatGroupDetailDto;
 import co.jp.xeex.chat.repository.ChatFriendRepository;
 import co.jp.xeex.chat.repository.ChatGroupRepository;
-import co.jp.xeex.chat.repository.ChatMessageRepository;
 import co.jp.xeex.chat.repository.UnreadMessageRepository;
 import lombok.AllArgsConstructor;
 
@@ -32,7 +31,6 @@ public class GetAllGroupFriendServiceImpl extends ServiceBaseImpl<GetAllGroupFri
 
     // DI
     private ChatGroupRepository chatGroupRepo;
-    private ChatMessageRepository chatMessageRepo;
     private ChatFriendRepository chatFriendRepo;
     private UnreadMessageRepository unreadMessageRepository;
     private UserService userService;
@@ -70,7 +68,6 @@ public class GetAllGroupFriendServiceImpl extends ServiceBaseImpl<GetAllGroupFri
             ChatGroupDetailDto chatGroupDetailDto = new ChatGroupDetailDto();
             chatGroupDetailDto.setGroupId(chatGroupDto.getGroupId());
             chatGroupDetailDto.setGroupName(chatGroupDto.getGroupName());
-            chatGroupDetailDto.setStartMessageId(chatMessageRepo.getStartMessageIdByGroup(chatGroupDto.getGroupId()));
 
             // Get unread count
             UnreadMessage unreadMessage = unreadMessageRepository.getUnreadMessage(empCd, chatGroupDto.getGroupId(),
@@ -99,8 +96,7 @@ public class GetAllGroupFriendServiceImpl extends ServiceBaseImpl<GetAllGroupFri
             friendDetailDto.setGroupId(friendDto.getGroupId());
             friendDetailDto.setGroupName(friendDto.getGroupName());
             friendDetailDto.setEmpCd(friendDto.getEmpCd());
-            friendDetailDto.setStartMessageId(chatMessageRepo.getStartMessageIdByGroup(friendDto.getGroupId()));
-            friendDetailDto.setAvatar(userService.getUrlAvatarByEmpCd(friendDto.getEmpCd()));
+            friendDetailDto.setAvatar(userService.getUrlAvatarByAvatar(friendDto.getAvatar()));
 
             // Get unread count
             UnreadMessage unreadMessage = unreadMessageRepository.getUnreadMessage(empCd, friendDto.getGroupId(), null);

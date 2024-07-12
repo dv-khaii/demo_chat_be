@@ -10,11 +10,9 @@ import co.jp.xeex.chat.domains.auth.dto.AppInfoDto;
 @Component
 @PropertySource("classpath:application.properties")
 public class EnvironmentUtil {
-
-    // constant
-    private static final String HTTP = "http";
-
     // Application properties value
+    @Value("${file.host}")
+    public String fileHost;
     @Value("${server.address}")
     public String serverAddress;
     @Value("${server.port}")
@@ -45,15 +43,6 @@ public class EnvironmentUtil {
      */
     public String getConfigValue(String configKey) {
         return env.getProperty(configKey);
-    }
-
-    /**
-     * Get domain host
-     * 
-     * @return
-     */
-    public String getDomain() {
-        return String.format("%s://%s:%s", HTTP, serverAddress, serverPort);
     }
 
     /**

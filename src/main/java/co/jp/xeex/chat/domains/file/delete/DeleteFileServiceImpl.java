@@ -57,15 +57,13 @@ public class DeleteFileServiceImpl implements DeleteFileService {
             throw new BusinessException(DELETE_FILE_ERR_PERMISSION_DENIED, in.lang);
         }
 
-        // Delete store file
-        Path targePath = getTargetPath(in, file.getCreateAt());
-        Path filePath = targePath.resolve(in.getStoreName());
-        if (Files.exists(filePath)) {
-            try {
-                Files.delete(filePath);
-            } catch (IOException e) {
-                throw new BusinessException(e.getMessage(), in.lang);
-            }
+        try {
+            // Delete store file
+            Path targePath = getTargetPath(in, file.getCreateAt());
+            Path filePath = targePath.resolve(in.getStoreName());
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new BusinessException(e.getMessage(), in.lang);
         }
 
         // Delete file data

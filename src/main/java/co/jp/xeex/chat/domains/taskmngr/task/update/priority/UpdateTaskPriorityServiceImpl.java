@@ -1,7 +1,7 @@
 package co.jp.xeex.chat.domains.taskmngr.task.update.priority;
 
 import co.jp.xeex.chat.base.ServiceBaseImpl;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskStatus;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskStatus;
 import co.jp.xeex.chat.entity.Task;
 import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.repository.TaskRepository;

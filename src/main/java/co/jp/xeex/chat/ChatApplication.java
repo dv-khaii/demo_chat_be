@@ -7,12 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import co.jp.xeex.chat.common.AppConstant;
 import jakarta.annotation.PostConstruct;
+//import 
 
 @SpringBootApplication
 public class ChatApplication {
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(ChatApplication.class, args);
 	}
 

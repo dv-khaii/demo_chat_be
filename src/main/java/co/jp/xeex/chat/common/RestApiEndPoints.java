@@ -77,6 +77,18 @@ public class RestApiEndPoints {
      */
     public static final String UPLOAD_FILE = "/file/upload";
     /**
+     * Upload avatar file<br>
+     */
+    public static final String UPLOAD_AVATAR_FILE = "/file/upload/avatar";
+    /**
+     * Upload chat file<br>
+     */
+    public static final String UPLOAD_CHAT_FILE = "/file/upload/chat";
+    /**
+     * Upload task file<br>
+     */
+    public static final String UPLOAD_TASK_FILE = "/file/upload/task";
+    /**
      * Download file<br>
      */
     public static final String DOWNLOAD_FILE = "/file/{fileClassify}/{storeName}";

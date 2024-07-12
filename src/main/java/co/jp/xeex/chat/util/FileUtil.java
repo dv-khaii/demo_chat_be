@@ -7,10 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.sql.Timestamp;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +31,7 @@ import co.jp.xeex.chat.common.AppConstant;
 @SuppressWarnings({ "squid:S1118" })
 public class FileUtil {
     private static final int BUFFER_SIZE = 1024;
-    private static final String[] IMAGE_TYPES = new String[] { "png", "jpg", "jpeg", "svg" };
+    private static final String[] IMAGE_TYPES = { "png", "jpg", "jpeg", "svg" };
 
     /**
      * uploadFile to string path
@@ -129,9 +131,10 @@ public class FileUtil {
         return outputStream -> {
             int bytesRead;
             byte[] buffer = new byte[BUFFER_SIZE];
-            InputStream inputStream = urlResource.getInputStream();
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
+            try (InputStream inputStream = urlResource.getInputStream()) {
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
             }
         };
     }
@@ -169,7 +172,7 @@ public class FileUtil {
         copyFile(tempPath.toFile(), destFile);
 
         // Delete temp path
-        Files.delete(tempPath);
+        Files.deleteIfExists(tempPath);
     }
 
     /**
@@ -236,13 +239,11 @@ public class FileUtil {
         if (targetFolderPath.exists()) {
             File[] files = targetFolderPath.listFiles();
             for (File file : files) {
-                if (file.exists()) {
-                    Files.delete(file.toPath());
-                }
+                Files.deleteIfExists(file.toPath());
             }
 
             // Delete temp path
-            Files.delete(targetPath);
+            Files.deleteIfExists(targetPath);
         }
     }
 
@@ -257,10 +258,34 @@ public class FileUtil {
         if (targetPath.toFile().exists()) {
             for (String storeFile : storeFiles) {
                 Path filePath = targetPath.resolve(storeFile);
-                if (filePath.toFile().exists()) {
-                    Files.delete(filePath);
-                }
+                Files.deleteIfExists(filePath);
             }
         }
+    }
+
+    /**
+     * v_long:
+     * Search files by name or path
+     * 
+     * @param rootFolder the root folder start to search
+     * @param fileOrPath the file or path to search
+     * @return the list of files found
+     * @throws IOException if an I/O error occurs or file not found
+     */
+    public static List<Path> searchFilesByName(String rootFolder, String fileOrPath) throws IOException {
+        Path startPath = Paths.get(rootFolder);
+        List<Path> result;
+        String fileNameOnly = Paths.get(fileOrPath).getFileName().toString();
+        try (Stream<Path> stream = Files.walk(startPath)) {
+            List<Path> paths = stream.collect(Collectors.toList());            
+            result = paths.stream()
+                    //.filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().equals(fileNameOnly))
+                    .collect(Collectors.toList());
+        }
+        if (result == null || result.isEmpty()) {
+            throw new IOException("File not found");
+        }
+        return result;
     }
 }

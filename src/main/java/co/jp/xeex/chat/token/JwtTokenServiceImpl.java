@@ -1,6 +1,10 @@
 package co.jp.xeex.chat.token;
 
-import io.jsonwebtoken.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,9 +13,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import co.jp.xeex.chat.exception.BusinessException;
-
-import java.util.*;
-import java.util.function.Function;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 /**
  * JwtTokenServiceImpl
@@ -29,13 +37,13 @@ public class JwtTokenServiceImpl implements JwtTokenService {
      * Token expiration time in seconds
      */
     @Value("${jwt.expiration.access}")
-    private int JWT_EXPIRATION_TIME_ACCESS;
+    private Long JWT_EXPIRATION_TIME_ACCESS;
 
     /**
      * Token expiration time in seconds
      */
     @Value("${jwt.expiration.refesh}")
-    private int JWT_EXPIRATION_TIME_REFRESH;
+    private Long JWT_EXPIRATION_TIME_REFRESH;
 
     @Value("${jwt.secret}")
     private String SECRET;
@@ -82,6 +90,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         claims.put(TokenConsts.CLAIM_KEY_FULL_NAME, claimDto.getFullName());
         claims.put(TokenConsts.CLAIM_KEY_LANG, claimDto.getLang());
         claims.put(TokenConsts.TOKEN_TYPE, claimDto.getTokenType());
+        claims.put(TokenConsts.CLAIM_KEY_ROLE_IDs, claimDto.getRoles());
         if (claimDto.getTokenType() == TokenType.ACCESS) {
             return Jwts.builder().setClaims(claims).setSubject(claimDto.getUserName())
                     .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -126,12 +135,10 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     }
 
     @Override
-    public List<Long> getUserRoleIds(String token) {
+    public String[] getUserRoleIds(String token) {
         try {
-            String roles = getClaimFromToken(token, claims -> (String) claims.get(TokenConsts.CLAIM_KEY_ROLE_IDs));
-            //
-            return Arrays.stream(roles.split(",")).map(s -> Long.parseLong(s)).toList();
-
+            return getClaimFromToken(token,
+                    claims -> claims.get(TokenConsts.CLAIM_KEY_ROLE_IDs).toString().split(","));
         } catch (Exception e) {
             return null;
         }
@@ -195,6 +202,20 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             public TokenType getTokenType() {
                 String type = claims.get(TokenConsts.TOKEN_TYPE).toString();
                 return TokenType.valueOf(type);
+            }
+
+            @Override
+            public String[] getRoles() {
+                try {
+                    //retrieved from existing claim
+                    return claims
+                            .get(TokenConsts.CLAIM_KEY_ROLE_IDs)
+                            .toString()
+                            .split(",");
+
+                } catch (Exception e) {
+                    return new String[0];
+                }
             }
         };
     }

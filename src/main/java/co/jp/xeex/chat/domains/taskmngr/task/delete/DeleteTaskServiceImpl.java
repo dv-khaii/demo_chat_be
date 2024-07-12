@@ -132,7 +132,7 @@ public class DeleteTaskServiceImpl extends ServiceBaseImpl<DeleteTaskRequest, De
 
             // Delete temp path
             targetPath = targetPath.resolve(Paths.get(file.getStoreName())).normalize().toAbsolutePath();
-            Files.delete(targetPath);
+            Files.deleteIfExists(targetPath);
         }
     }
 }

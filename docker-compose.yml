@@ -1,9 +1,33 @@
-version: "3"
-
+version: '3'
 services:
+  # Use an external DB (could be another container)
+  # So donot include in this file
+  # mysql-services:
+  #   image: mysql:latest
+  #   container_name: mysql-xeex-colla-container
+  #   env_file: ./.env
+  #   environment:
+  #     - MYSQL_DATABASE=
+  #     - MYSQL_ROOT_PASSWORD=
+  #     - MYSQL_USER=xex
+  #     - MYSQL_PASSWORD=
+  #   ports:
+  #     - "3306:3306"
+  #   restart: always
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
   app:
-    image: ghcr.io/dv-khaii/demo_chat_be:main
-    ports:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # depends_on:
+    #   - mysql-services
+    restart: always
+    ports: #localport:containerport
       - "8080:8080"
-    restart: unless-stopped
-    env_file: .env
+    volumes: 
+      - xeex_collab_upload:/app/uploads
+    container_name: xeex_collab_container
+volumes:
+  xeex_collab_upload:
+  #mysql_data:

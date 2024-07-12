@@ -15,6 +15,7 @@ import co.jp.xeex.chat.repository.ChatGroupRepository;
 import co.jp.xeex.chat.repository.ChatMessageRepository;
 import co.jp.xeex.chat.repository.FileRepository;
 import co.jp.xeex.chat.repository.MessageTaskRepository;
+import co.jp.xeex.chat.repository.UnreadMessageRepository;
 import co.jp.xeex.chat.util.EnvironmentUtil;
 import co.jp.xeex.chat.util.FileUtil;
 import jakarta.transaction.Transactional;
@@ -48,6 +49,7 @@ public class DeleteGroupServiceImpl extends ServiceBaseImpl<DeleteGroupRequest, 
     private ChatFileRepository chatFileRepo;
     private FileRepository fileRepo;
     private MessageTaskRepository messageTaskRepo;
+    private UnreadMessageRepository unreadMessageRepo;
     private ChatMessageBroadcastService chatMessageSendService;
     private EnvironmentUtil environmentUtil;
 
@@ -105,6 +107,10 @@ public class DeleteGroupServiceImpl extends ServiceBaseImpl<DeleteGroupRequest, 
         for (ChatGroupMember chatGroupMember : chatGroupMembers) {
             // Delete member
             if (in.requestBy.equals(chatGroupMember.getMemberEmpCd())) {
+                // Delete unread message
+                List<String> unreadMessageIds = unreadMessageRepo.getIdsByUserGroup(in.requestBy, in.groupId);
+                unreadMessageRepo.deleteAllById(unreadMessageIds);
+
                 chatGroupMemberRepo.delete(chatGroupMember);
             }
 

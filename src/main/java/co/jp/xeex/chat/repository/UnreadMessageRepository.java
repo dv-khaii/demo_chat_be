@@ -1,5 +1,7 @@
 package co.jp.xeex.chat.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -53,4 +55,45 @@ public interface UnreadMessageRepository extends RepositoryBase<UnreadMessage, S
             "   AND repplyMessageId IS NOT NULL ")
     Integer getUnreadCountRepply(@Param("userId") String userId, @Param("chatGroupId") String chatGroupId);
 
+    /**
+     * Retrieves a list of message IDs by the given chat group ID.
+     *
+     * @param chatGroupId the ID of the chat group
+     * @return a list of IDs associated with the chat group
+     */
+    @Query("SELECT o.id " +
+            " FROM " +
+            "   UnreadMessage o " +
+            " WHERE " +
+            "   chatGroupId = :chatGroupId ")
+    List<String> getIdsByGroupId(@Param("chatGroupId") String chatGroupId);
+
+    /**
+     * Retrieves a list of message IDs by user ID and chat group ID.
+     * 
+     * @param userId      the ID of the user
+     * @param chatGroupId the ID of the chat group
+     * @return a list of IDs associated with the user and chat group
+     */
+    @Query("SELECT o.id " +
+            " FROM " +
+            "   UnreadMessage o " +
+            " WHERE " +
+            "   userId = :userId " +
+            "   AND chatGroupId = :chatGroupId ")
+    List<String> getIdsByUserGroup(@Param("userId") String userId,
+            @Param("chatGroupId") String chatGroupId);
+
+    /**
+     * Retrieves a list of message IDs based on the reply message ID
+     *
+     * @param repplyMessageId The ID of the reply message.
+     * @return A list of message IDs.
+     */
+    @Query("SELECT o.id " +
+            " FROM " +
+            "   UnreadMessage o " +
+            " WHERE " +
+            "   repplyMessageId = :repplyMessageId ")
+    List<String> getIdsByRepplyMessageId(@Param("repplyMessageId") String repplyMessageId);
 }

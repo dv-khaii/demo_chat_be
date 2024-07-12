@@ -1,0 +1,13 @@
+[INFO ] 2024-07-04 13:21:10.010-JwtAuthenticationFilter: Jwt Token Filter receive a request to url: https://localhost:4431/
+[ERROR] 2024-07-04 13:21:10.010-JwtAuthenticationFilter: Error checking token: Invalid token.
+[INFO ] 2024-07-04 13:21:10.010-JwtAuthenticationFilter: Jwt Token Filter receive a request to url: https://localhost:4431/favicon.ico
+[ERROR] 2024-07-04 13:21:10.010-JwtAuthenticationFilter: Error checking token: Invalid token.
+[INFO ] 2024-07-04 13:23:57.057-JwtAuthenticationFilter: Jwt Token Filter receive a request to url: https://localhost:8080/
+[ERROR] 2024-07-04 13:23:57.057-JwtAuthenticationFilter: Error checking token: Invalid token.
+[INFO ] 2024-07-04 13:23:57.057-JwtAuthenticationFilter: Jwt Token Filter receive a request to url: https://localhost:8080/favicon.ico
+[ERROR] 2024-07-04 13:23:57.057-JwtAuthenticationFilter: Error checking token: Invalid token.
+[INFO ] 2024-07-10 09:23:48.048-PasswordEncryptor: DB_URL=ENC(SxPYuaFcWcU44JQEyW/xMKgevFhEBdklYseR3vMea0anvz46AZ3i5hhPdFIBnhjAy1cqj5fGvUWcSGW7UrBXE7q/heCEmVa7dENn4//ArTM=)
+[INFO ] 2024-07-10 09:23:48.048-PasswordEncryptor: DB_USERNAME=ENC(88RSr5IM1v0yvCyk6FBa3g==)
+[INFO ] 2024-07-10 09:23:48.048-PasswordEncryptor: DB_PASSWORD=ENC(NAZQcwccmhWzzBQKEzDgPA==)
+[INFO ] 2024-07-10 09:23:48.048-PasswordEncryptor: JWT_SECRET=ENC(m6dhtQEe3uhHUZzRWd9tpYkIfRug599p50X2hkm47NoQb2cA+qHknvOFLxUtlccOaRT0GqKuKmP+RzEPDb3x15Ije3niFWY1YBRRhZWZlMc=)
+[INFO ] 2024-07-10 09:23:48.048-PasswordEncryptor: SSL_KEY_STORE_PASSWORD=ENCzoAcb253GK3ZFWOZDUOMVsX8KZTdu35g)

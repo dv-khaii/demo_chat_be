@@ -23,8 +23,8 @@ Websocket: use the WebSocket (STOMP socket)
   - Java プロジェクトのビルド/実行をサポートするプラグイン（Java Extension Pack をインストール）
   * Debugger for Java
   * Extension Pack for Java
-  * Gradle for Java
-  * Maven for Java
+  * Extension Pack for Java Auto Config v2024.626.0
+  * Gradle for Java v3.14.1
   * Project Manager for Java
   * Test Runner for Java
   - コードのフォーマットと警告チェックをサポートするプラグイン
@@ -35,13 +35,24 @@ Websocket: use the WebSocket (STOMP socket)
 ## ビルド＆実行
 
 - VS Code - ターミナルを使用
-
 * Clean: gradle clean または .\gradlew clean
 * Build: gradle build または .\gradlew build
 * Run: gradle bootRun または .\gradlew bootRun
 
-## プロジェクト構造
+Use docker-compose to build/run the container
+```bash
+# build 
+docker-compose build
+
+# run the container
+docker-compose up -d
+
+#stop the container
+docker-compose down
 ```
+
+## プロジェクト構造
+```bash
 main
 ├─java.co.jp.xeex.chat: システム全体のバックエンドチャットを処理するパッケージ
 │ ├─base : ベースクラス

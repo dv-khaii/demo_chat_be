@@ -1,8 +1,8 @@
 package co.jp.xeex.chat.domains.taskmngr.task.getinfo;
 
 import co.jp.xeex.chat.base.ServiceBaseImpl;
+import co.jp.xeex.chat.domains.taskmngr.dto.TaskDto;
 import co.jp.xeex.chat.domains.taskmngr.service.TaskService;
-import co.jp.xeex.chat.domains.taskmngr.task.dto.TaskDto;
 import co.jp.xeex.chat.entity.Task;
 import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.repository.TaskRepository;

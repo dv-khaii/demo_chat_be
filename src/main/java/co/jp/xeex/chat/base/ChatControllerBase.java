@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import com.google.gson.Gson;
 
 import co.jp.xeex.chat.domains.chat.ChatAction;
 import co.jp.xeex.chat.domains.chat.ChatMessageDto;
@@ -13,6 +12,7 @@ import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.lang.resource.ResourceMessageItem;
 import co.jp.xeex.chat.token.TokenClaimData;
 import co.jp.xeex.chat.token.TokenType;
+import co.jp.xeex.chat.util.ConvertUtil;
 import co.jp.xeex.chat.validation.DtoValidateService;
 import lombok.extern.log4j.Log4j;
 
@@ -46,10 +46,14 @@ public class ChatControllerBase {
      * @throws BusinessException
      */
     protected void preProcessChatMessage(ChatMessageDto msgDto, SimpMessageHeaderAccessor headerAccessor)
-            throws BusinessException {
+            throws BusinessException {        
+        if (null == msgDto) {
+            throw new BusinessException(CONTROLLER_BASE_INPUT_INVALID);
+        }
+        
+        log.info("Checking request: " + msgDto.getClass().getSimpleName() + " = "  + ConvertUtil.toJson(msgDto));
         if (headerAccessor != null && headerAccessor.getSessionAttributes() != null) {
             // claimData set in SocketHandshakeInterceptor
-            @SuppressWarnings("null")
             TokenClaimData claimData = (TokenClaimData) headerAccessor.getSessionAttributes().get("token");
             // ưu tiên lấy info từ claimData
             if (claimData != null) {
@@ -61,9 +65,7 @@ public class ChatControllerBase {
                 }
             }
         }
-        if (null == msgDto) {
-            throw new BusinessException(CONTROLLER_BASE_INPUT_INVALID);
-        }
+
         // validate the ChatMessage
         List<ResourceMessageItem> errors = this.validation.getErrors(msgDto, msgDto.lang);
         if (null != errors) {
@@ -74,9 +76,7 @@ public class ChatControllerBase {
         // hold the current user name
         this.currentUserName = msgDto.requestBy;
 
-        String json = new Gson().toJson(msgDto);
-        log.info("preProcessChatMessage: " + json);
-        log.info("Validate request: " + json);
+        log.debug("Validate request");
     }
 
     /**

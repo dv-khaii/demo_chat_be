@@ -18,11 +18,11 @@ public class SocketEventListener {
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        log.info("Received a new web socket connection");
+        log.info("Socket connection established");
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        log.info("Received a new web socket disconnection");
+        log.info("Socket connection disconnected");
     }
 }

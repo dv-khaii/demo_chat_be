@@ -1,7 +1,7 @@
 package co.jp.xeex.chat.domains.taskmngr.task.update.status;
 
 import co.jp.xeex.chat.base.RequestBase;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskStatus;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskStatus;
 import co.jp.xeex.chat.validation.DtoValidateConsts;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

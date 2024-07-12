@@ -8,7 +8,6 @@ import co.jp.xeex.chat.domains.chatmngr.service.UserService;
 import co.jp.xeex.chat.entity.UnreadMessage;
 import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.repository.ChatFriendRepository;
-import co.jp.xeex.chat.repository.ChatMessageRepository;
 import co.jp.xeex.chat.repository.UnreadMessageRepository;
 import lombok.AllArgsConstructor;
 
@@ -30,7 +29,6 @@ public class SearchFriendServiceImpl extends ServiceBaseImpl<SearchFriendRequest
 
     // repository uses
     private ChatFriendRepository friendsRepo;
-    private ChatMessageRepository chatMessageRepo;
     private UnreadMessageRepository unreadMessageRepository;
     private UserService userService;
 
@@ -67,8 +65,7 @@ public class SearchFriendServiceImpl extends ServiceBaseImpl<SearchFriendRequest
             friendDetailDto.setGroupId(friendDto.getGroupId());
             friendDetailDto.setGroupName(friendDto.getGroupName());
             friendDetailDto.setEmpCd(friendDto.getEmpCd());
-            friendDetailDto.setStartMessageId(chatMessageRepo.getStartMessageIdByGroup(friendDto.getGroupId()));
-            friendDetailDto.setAvatar(userService.getUrlAvatarByEmpCd(friendDto.getEmpCd()));
+            friendDetailDto.setAvatar(userService.getUrlAvatarByAvatar(friendDto.getAvatar()));
 
             // Get unread count
             UnreadMessage unreadMessage = unreadMessageRepository.getUnreadMessage(empCd, friendDto.getGroupId(), null);

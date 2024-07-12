@@ -1,5 +1,15 @@
 package co.jp.xeex.chat.domains.taskmngr.task.save;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import co.jp.xeex.chat.base.ServiceBaseImpl;
 import co.jp.xeex.chat.common.AppConstant;
 import co.jp.xeex.chat.domains.chat.ChatAction;
@@ -8,9 +18,9 @@ import co.jp.xeex.chat.domains.chat.ChatMessageDto;
 import co.jp.xeex.chat.domains.file.dto.FileDto;
 import co.jp.xeex.chat.domains.file.enums.FileClassify;
 import co.jp.xeex.chat.domains.file.enums.FileType;
-import co.jp.xeex.chat.domains.taskmngr.task.dto.TaskDto;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskStatus;
-import co.jp.xeex.chat.domains.taskmngr.task.mapper.TaskMapper;
+import co.jp.xeex.chat.domains.taskmngr.dto.TaskDto;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskStatus;
+import co.jp.xeex.chat.domains.taskmngr.mapper.TaskMapper;
 import co.jp.xeex.chat.entity.ChatMessage;
 import co.jp.xeex.chat.entity.File;
 import co.jp.xeex.chat.entity.MessageTask;
@@ -23,23 +33,11 @@ import co.jp.xeex.chat.repository.MessageTaskRepository;
 import co.jp.xeex.chat.repository.TaskFileRepository;
 import co.jp.xeex.chat.repository.TaskRepository;
 import co.jp.xeex.chat.repository.UserRepository;
+import co.jp.xeex.chat.util.DateTimeUtil;
 import co.jp.xeex.chat.util.EnvironmentUtil;
 import co.jp.xeex.chat.util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 /**
  * SaveTaskServiceImpl
@@ -80,8 +78,6 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
         try {
             boolean isCreateMessageTask = validation(in, task);
             saveTask(in, task, isCreateMessageTask);
-        } catch (ParseException e) {
-            throw new BusinessException(e.getMessage(), in.lang);
         } catch (IOException ioe) {
             throw new BusinessException(ioe.getMessage(), in.lang);
         }
@@ -102,16 +98,22 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
      */
     private boolean validation(SaveTaskRequest in, Task task) throws IOException {
         // validation assignee
-        if (!StringUtils.isEmpty(in.assignee) && userRepo.findByUserName(in.assignee) == null) {
+        boolean assigneeOk = !StringUtils.isEmpty(in.assignee) // assignee is not empty
+                && userRepo.findByUserName(in.assignee) == null; // assignee is not existed in DB
+        if (assigneeOk) {
             throw new BusinessException(SAVE_TASK_ERR_USER_IS_NOT_EXISTED, new String[] { in.assignee }, in.lang);
         }
 
         // Check date
-        if (in.startDate != null && in.dueDate != null && in.startDate.compareTo(in.dueDate) > 0) {
+        boolean taskDateOk = in.startDate != null // start date is not null
+                && in.dueDate != null // due date is not null
+                && in.startDate.compareTo(in.dueDate) > 0; // start date greater than due date
+
+        if (taskDateOk) {
             throw new BusinessException(SAVE_TASK_ERR_START_DATE_GREATER_THAN_DUE_DATE, in.lang);
         }
 
-        // Check max count file save
+        // Check file upload count
         if (in.taskFiles.size() > environmentUtil.maxUploadFileCount) {
             // Delete temp files
             Path targetTempPath = Paths.get(environmentUtil.rootUploadPath, AppConstant.PATH_TEMP_PREFIX, in.requestBy);
@@ -123,13 +125,11 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
         }
 
         // Find task
-        boolean isCreateMessageTask = false;
+        boolean isCreateMessageTask = !StringUtils.isEmpty(in.messageId);
         if (StringUtils.isEmpty(task.getId())) {
             // Create task if not exist
             task.initDefault(in.requestBy);
-
             // Check is exist message task
-            isCreateMessageTask = !StringUtils.isEmpty(in.messageId);
             if (isCreateMessageTask && messageTaskRepo.getTaskIdByMessageId(in.messageId) != null) {
                 throw new BusinessException(SAVE_TASK_ERR_MESSAGE_TASK_CREATED_FROM_THIS_MESSAGE, in.lang);
             }
@@ -154,25 +154,12 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
      * @param in
      * @param task
      * @param isCreateMessageTask
-     * @throws ParseException
      */
-    private void saveTask(SaveTaskRequest in, Task task, boolean isCreateMessageTask) throws ParseException {
+    private void saveTask(SaveTaskRequest in, Task task, boolean isCreateMessageTask) {
         // Save startdate
-        SimpleDateFormat sdf = new SimpleDateFormat(AppConstant.DATE_FORMAT);
-        task.setStartDate(null);
-        if (!StringUtils.isEmpty(in.startDate)) {
-            // Convert date
-            Timestamp startDate = new Timestamp(sdf.parse(in.startDate).getTime());
-            task.setStartDate(startDate);
-        }
-
+        task.setStartDate(DateTimeUtil.convertToTimestamp(in.startDate));
         // Save duedate
-        task.setDueDate(null);
-        if (!StringUtils.isEmpty(in.dueDate)) {
-            // Convert date
-            Timestamp dueDate = new Timestamp(sdf.parse(in.dueDate).getTime());
-            task.setDueDate(dueDate);
-        }
+        task.setDueDate(DateTimeUtil.convertToTimestamp(in.dueDate));
 
         // Save task
         task.setGroupId(StringUtils.EMPTY.equals(in.groupId) ? null : in.groupId);
@@ -180,6 +167,10 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
         task.setAssignee(in.assignee);
         task.setDescription(in.description);
         task.setTaskStatus(in.taskStatus);
+        // v_long: in case task status is DONE, update end date
+        if (in.taskStatus.equals(TaskStatus.DONE)) {
+            task.setDueDate(DateTimeUtil.getCurrentTimestamp());
+        }
         task.setTaskPriority(in.taskPriority);
         task.setUpdateBy(in.requestBy);
         taskRepo.saveAndFlush(task);
@@ -248,7 +239,6 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
         List<String> oldStoreNames = oldFiles.stream().map(File::getStoreName).collect(Collectors.toList());
 
         // Save new files DB
-        String domain = environmentUtil.getDomain();
         String targetGroupPath = StringUtils.isEmpty(in.groupId) ? in.requestBy : in.groupId;
         for (FileDto requestFile : in.taskFiles) {
             if (!oldStoreNames.contains(requestFile.getStoreName())) {
@@ -279,8 +269,8 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
                 }
 
                 // Set response file url
-                String fileUrl = String.format(AppConstant.FILE_URL, domain, AppConstant.PATH_TASK_PREFIX,
-                        file.getStoreName());
+                String fileUrl = String.format(AppConstant.FILE_URL, environmentUtil.fileHost,
+                        AppConstant.PATH_TASK_PREFIX, file.getStoreName());
                 requestFile.setDownloadUrl(fileUrl);
             }
         }
@@ -322,9 +312,7 @@ public class SaveTaskServiceImpl extends ServiceBaseImpl<SaveTaskRequest, SaveTa
                 Path targetPath = FileUtil.getTargetPath(environmentUtil.rootUploadPath, FileClassify.TASK.toString(),
                         targetGroupPath, oldFile.getCreateAt());
                 targetPath = targetPath.resolve(Paths.get(oldFile.getStoreName()));
-                if (Files.exists(targetPath)) {
-                    Files.delete(targetPath);
-                }
+                Files.deleteIfExists(targetPath);
             }
         }
     }

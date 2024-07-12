@@ -24,11 +24,6 @@ public class ChatGroupDetailDto {
      */
     private List<MemberDto> members;
     /**
-     * message start in group chat
-     * client use to check lazy load message history
-     */
-    private String startMessageId;
-    /**
      * unread message count
      * client use to detect unread message in group
      */

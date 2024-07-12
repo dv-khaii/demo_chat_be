@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +19,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@Table(name = "chat_message")
+@Table(name = "chat_message", indexes = {
+        @Index(name = "idx_group_id", columnList = "group_id"),
+        @Index(name = "idx_createat", columnList = "createat"),
+        @Index(name = "idx_repply_message_id", columnList = "repply_message_id") })
 public class ChatMessage extends EntityBase {
     @Column(name = "group_id", nullable = false, columnDefinition = "varchar(36)")
     private String groupId;

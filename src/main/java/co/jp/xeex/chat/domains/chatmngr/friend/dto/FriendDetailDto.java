@@ -26,11 +26,6 @@ public class FriendDetailDto {
      */
     private String avatar;
     /**
-     * message start in group chat
-     * client use to check lazy load message history
-     */
-    private String startMessageId;
-    /**
      * unread message count
      * client use to detect unread message in group
      */

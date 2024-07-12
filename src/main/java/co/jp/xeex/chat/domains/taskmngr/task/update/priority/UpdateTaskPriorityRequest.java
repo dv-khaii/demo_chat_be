@@ -1,7 +1,7 @@
 package co.jp.xeex.chat.domains.taskmngr.task.update.priority;
 
 import co.jp.xeex.chat.base.RequestBase;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskPriority;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskPriority;
 import co.jp.xeex.chat.validation.DtoValidateConsts;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

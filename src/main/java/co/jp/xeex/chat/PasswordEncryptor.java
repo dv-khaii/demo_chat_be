@@ -16,7 +16,7 @@ public class PasswordEncryptor {
 
     public static void main(String[] args) {
         //
-        String dbUrl = "jdbc:mysql://192.168.249.122:33061/xeex?useSSL=false&serverTimezone=UTC";
+        String dbUrl = "jdbc:mysql://192.168.249.121:33061/xeex?useSSL=false&serverTimezone=UTC";
         String dbUsername = "root";
         String dbPwd = "root";
         String jwwtSec = "FroDQsG+vJBwjbSsnIIOGVALBnxgulzqp6NzjH6aGg50PKDUze+XLrOl3uMJmd13";
@@ -25,9 +25,10 @@ public class PasswordEncryptor {
         encryptor.setPassword(MASTER_PWD);
         encryptor.setAlgorithm("PBEWithMD5AndDES");
         //
-        log.info("DB_URL=" + encryptor.encrypt(dbUrl));
-        log.info("DB_USERNAME=" + encryptor.encrypt(dbUsername));
-        log.info("DB_PASSWORD=" + encryptor.encrypt(dbPwd));
-        log.info("JWT_SECRET=" + encryptor.encrypt(jwwtSec));
+        log.info("DB_URL=ENC(" + encryptor.encrypt(dbUrl) + ")");
+        log.info("DB_USERNAME=ENC(" + encryptor.encrypt(dbUsername) + ")");
+        log.info("DB_PASSWORD=ENC(" + encryptor.encrypt(dbPwd) + ")");
+        log.info("JWT_SECRET=ENC(" + encryptor.encrypt(jwwtSec) + ")");
+        log.info("SSL_KEY_STORE_PASSWORD=ENC" + encryptor.encrypt("xeexpass") + ")");
     }
 }

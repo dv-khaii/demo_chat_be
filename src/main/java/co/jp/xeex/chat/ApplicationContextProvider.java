@@ -22,7 +22,7 @@ public class ApplicationContextProvider implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(@SuppressWarnings("null") ApplicationContext applicationContext)
+    public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
         context = applicationContext;
     }

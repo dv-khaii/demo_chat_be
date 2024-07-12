@@ -12,4 +12,6 @@ public class AppConstant {
     public static final String PATH_CHAT_PREFIX = "chat";
     public static final String PATH_TASK_PREFIX = "task";
     public static final String PATH_AVATAR_PREFIX = "avatar";
+    public static final String COOKIE_VALUE = "Token=%s; SameSite=None; Path=/; HttpOnly; Secure; Expires=%s";
+    public static final String COOKIE_NAME = "Set-Cookie";
 }

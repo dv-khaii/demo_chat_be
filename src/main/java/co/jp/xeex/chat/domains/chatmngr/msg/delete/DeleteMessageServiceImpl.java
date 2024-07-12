@@ -133,9 +133,7 @@ public class DeleteMessageServiceImpl extends ServiceBaseImpl<DeleteMessageReque
 
             // Delete temp path
             targetPath = targetPath.resolve(Paths.get(file.getStoreName())).normalize().toAbsolutePath();
-            if (Files.exists(targetPath)) {
-                Files.delete(targetPath);
-            }
+            Files.deleteIfExists(targetPath);
         }
     }
 }

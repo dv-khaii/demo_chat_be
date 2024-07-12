@@ -6,28 +6,7 @@ import co.jp.xeex.chat.exception.BusinessException;
  * The ChatService provides methods for sending chat messages to different targets.
  * @author v_long
  */
-public interface ChatService {
-
-    /**
-     * Process ChatMessageDto and Sends a chat message to the public group.
-     *
-     * @param msg the chat message to send
-     * @return the sent chat message
-     * @throws Exception if an error occurs during the message sending process
-     * @throws BusinessException if a business exception occurs during the message sending process
-     */
-    ChatMessageDto sendMessageToPublicGroup(ChatMessageDto msg) throws BusinessException;
-
-    /**
-     * Process ChatMessageDto and Sends a chat message to a specific user.
-     *
-     * @param msgDto the chat message to send
-     * @return the sent chat message
-     * @throws Exception if an error occurs during the message sending process
-     * @throws BusinessException if a business exception occurs during the message sending process
-     */
-    ChatMessageDto sendMessageToUser(ChatMessageDto msgDto) throws BusinessException;
-
+public interface ChatService {    
     /**
      * Process ChatMessageDto and Sends a chat message to a specific group.
      *

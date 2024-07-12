@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     public String getUrlAvatarByAvatar(String avatar) {
         if (!StringUtils.isEmpty(avatar)) {
             return String.format(AppConstant.FILE_URL,
-                    environmentUtil.getDomain(), AppConstant.PATH_AVATAR_PREFIX, avatar);
+                    environmentUtil.fileHost, AppConstant.PATH_AVATAR_PREFIX, avatar);
         }
 
         return null;

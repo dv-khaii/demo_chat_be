@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import co.jp.xeex.chat.domains.chat.unread.ChatUnreadService;
+import co.jp.xeex.chat.domains.chatmngr.msg.unread.ChatUnreadService;
 import co.jp.xeex.chat.exception.BusinessException;
 import lombok.AllArgsConstructor;
 

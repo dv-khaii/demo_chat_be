@@ -1,6 +1,5 @@
 package co.jp.xeex.chat.base;
 
-import co.jp.xeex.chat.domains.taskmngr.task.dto.OrderByDto;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -10,9 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
+import co.jp.xeex.chat.domains.taskmngr.dto.OrderFieldDto;
+
 /**
  * PageInfo represents the PageRequest
- * (v_long thấy thịnh dùng nhiều nơi rườm rà quá)
  * 
  * @author v_long
  */
@@ -20,14 +20,14 @@ import org.springframework.data.domain.Sort.Order;
 public class PageInfo {
     private Integer pageIdx;
     private Integer perPage = 20;
-    private List<OrderByDto> orderFields;
+    private List<OrderFieldDto> orderFieldList;
 
     public PageRequest getPageRequest() {
         Sort sort = Sort.unsorted();
-        if (this.orderFields != null && !this.orderFields.isEmpty()) {
+        if (this.orderFieldList != null && !this.orderFieldList.isEmpty()) {
             List<Order> orders = new ArrayList<>();
-            for (OrderByDto orderByDto : this.orderFields) {
-                Order order = new Order(orderByDto.getOrderType(), orderByDto.getFieldName());
+            for (OrderFieldDto orderFieldDto : this.orderFieldList) {
+                Order order = new Order(orderFieldDto.orderType, orderFieldDto.fieldName);
                 orders.add(order);
             }
             sort = Sort.by(orders);

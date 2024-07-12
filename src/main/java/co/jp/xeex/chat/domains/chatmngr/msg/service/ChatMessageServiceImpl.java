@@ -33,6 +33,8 @@ import co.jp.xeex.chat.repository.UnreadMessageRepository;
 import co.jp.xeex.chat.util.DateTimeUtil;
 import co.jp.xeex.chat.util.EnvironmentUtil;
 import co.jp.xeex.chat.util.FileUtil;
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.AllArgsConstructor;
 
 /**
@@ -91,7 +93,9 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         chatMsgDto.senderImage = userService.getUrlAvatarByAvatar(chatMessageDetailDto.getSenderImage());
 
         // Add repply message
-        chatMsgDto.repplyMessage = getRepplyMessageDetail(chatMessageDetailDto.getMessageId(), requestBy);
+        if (!StringUtils.isEmpty(requestBy)) {
+            chatMsgDto.repplyMessage = getRepplyMessageDetail(chatMessageDetailDto.getMessageId(), requestBy);
+        }
 
         // Add chat files
         chatMsgDto.chatFiles = getChatFileDto(chatMessageDetailDto.getMessageId());
@@ -128,9 +132,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         // Add last repply
         Timestamp lastRepply = chatMessageRepo.getLastRepplyMessageById(repplyMessageId);
         result.setLastRepply(DateTimeUtil.getZoneDateTimeString(lastRepply));
-
-        // Add start message repply id
-        result.setStartMessageId(chatMessageRepo.getStartMessageByRepplyId(repplyMessageId));
 
         // Add all repply user info
         List<SenderDto> senderDtos = chatMessageRepo.findRepplyUserById(repplyMessageId);
@@ -171,7 +172,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             }
 
             // Save chat file
-            String domain = environmentUtil.getDomain();
             for (FileDto fileDto : chatMessageDto.chatFiles) {
                 // Move temp file to chat file
                 FileUtil.saveTempFile(environmentUtil.rootUploadPath,
@@ -196,8 +196,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 chatFileRepo.saveAndFlush(chatFile);
 
                 // Set response file url
-                String fileUrl = String.format(AppConstant.FILE_URL, domain, AppConstant.PATH_CHAT_PREFIX,
-                        fileDto.getStoreName());
+                String fileUrl = String.format(AppConstant.FILE_URL, environmentUtil.fileHost,
+                        AppConstant.PATH_CHAT_PREFIX, fileDto.getStoreName());
                 fileDto.setDownloadUrl(fileUrl);
                 if (FileType.IMAGE.equals(fileDto.getFileType())) {
                     fileDto.setImageUrl(fileUrl);
@@ -224,7 +224,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             fileDto.setStoreName(file.getStoreName());
             fileDto.setFileType(file.getFileType());
             fileDto.setEmpCd(file.getCreateBy());
-            fileDto.setDownloadUrl(String.format(AppConstant.FILE_URL, environmentUtil.getDomain(),
+            fileDto.setDownloadUrl(String.format(AppConstant.FILE_URL, environmentUtil.fileHost,
                     AppConstant.PATH_CHAT_PREFIX, file.getStoreName()));
             if (FileType.IMAGE.equals(file.getFileType())) {
                 fileDto.setImageUrl(fileDto.getDownloadUrl());
@@ -244,6 +244,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public void deleteOrEditChatMessage(ChatMessage chatMessage, String lang) {
         if (chatMessage != null) {
+            // Check edit main repply message
             int repplyCount = chatMessageRepo.getRepplyCount(chatMessage.getId());
             if (repplyCount > 0) {
                 // Update delete message
@@ -251,10 +252,32 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                         multiLangMessageService.getMessage(DELETE_MESSAGE_INFO_CHAT_CONTENT, lang)));
                 chatMessage.setAction(ChatAction.EDIT_DELETE_CHAT);
                 chatMessageRepo.saveAndFlush(chatMessage);
-            } else {
-                // Delete message
-                chatMessage.setAction(ChatAction.DELETE_CHAT);
-                chatMessageRepo.delete(chatMessage);
+                return;
+            }
+
+            // Delete message
+            chatMessage.setAction(ChatAction.DELETE_CHAT);
+            chatMessageRepo.delete(chatMessage);
+
+            // Check delete last repply message and main repply message has been deleted
+            if (!StringUtils.isEmpty(chatMessage.getRepplyMessageId())) {
+                repplyCount = chatMessageRepo.getRepplyCount(chatMessage.getRepplyMessageId());
+                if (repplyCount == 0) {
+                    // Delete unread message repply
+                    List<String> unreadMessageIds = unreadMessageRepo
+                            .getIdsByRepplyMessageId(chatMessage.getRepplyMessageId());
+                    unreadMessageRepo.deleteAllById(unreadMessageIds);
+
+                    // Check delete main repply message
+                    ChatMessage mainRepplyMessage = chatMessageRepo.findById(chatMessage.getRepplyMessageId())
+                            .orElse(null);
+                    if (mainRepplyMessage != null
+                            && ChatAction.EDIT_DELETE_CHAT.equals(mainRepplyMessage.getAction())) {
+                        // Delete main repply message
+                        chatMessage.setAction(ChatAction.DELETE_THREAD_CHAT);
+                        chatMessageRepo.delete(mainRepplyMessage);
+                    }
+                }
             }
         }
     }

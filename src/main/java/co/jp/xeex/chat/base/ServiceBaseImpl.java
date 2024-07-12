@@ -1,9 +1,12 @@
 package co.jp.xeex.chat.base;
 
 import co.jp.xeex.chat.exception.BusinessException;
+import co.jp.xeex.chat.util.ConvertUtil;
+import lombok.extern.log4j.Log4j;
 
-public abstract class ServiceBaseImpl<I extends RequestBase, O>
-        implements ServiceBase<I, O> {
+@Log4j
+public abstract class ServiceBaseImpl<Request extends RequestBase, Response>
+        implements ServiceBase<Request, Response> {
 
     /**
      * This method is called before processing the request.<br>
@@ -11,19 +14,20 @@ public abstract class ServiceBaseImpl<I extends RequestBase, O>
      * 
      * @param request
      */
-    protected void innitProcess(I request) {
+    protected void innitProcess(Request req) {
         // do nothing
+        log.debug("Initialize process");
     }
 
     /**
      * This method is called after processing the request.<br>
      * You can override this method to do something after processing.
      * 
-     * @param in
-     * @param out
+     * @param req
+     * @param rep
      */
-    protected void afterProcess(I in, O out) {
-        // do nothing
+    protected void afterProcess(Request req, Response rep) {
+        log.debug("Finished processing");
     }
 
     /**
@@ -31,23 +35,24 @@ public abstract class ServiceBaseImpl<I extends RequestBase, O>
      * Execute the business logic to make the business OutputData as a response data
      * object.
      * 
-     * @param in The request object.
+     * @param req The request object.
      * @return OutputData object
      * @throws Exception
      */
-    protected abstract O processRequest(I in) throws BusinessException;
+    protected abstract Response processRequest(Request req) throws BusinessException;
 
     @Override
-    public O execute(I in) throws BusinessException {
+    public Response execute(Request req) throws BusinessException {
         try {
             // innit process
-            this.innitProcess(in);
+            this.innitProcess(req);
 
             // Execute process logic
-            O out = this.processRequest(in);
+            log.debug("Start processing request: " + ConvertUtil.toSimpleName(req) + "=" + ConvertUtil.toJson(req));
+            Response out = this.processRequest(req);
 
             // after process
-            this.afterProcess(in, out);
+            this.afterProcess(req, out);
 
             return out;
         } catch (BusinessException e) {

@@ -1,6 +1,6 @@
 package co.jp.xeex.chat.domains.taskmngr.service;
 
-import co.jp.xeex.chat.domains.taskmngr.task.dto.TaskDto;
+import co.jp.xeex.chat.domains.taskmngr.dto.TaskDto;
 import co.jp.xeex.chat.entity.Task;
 
 /**

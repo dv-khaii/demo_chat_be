@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.jp.xeex.chat.base.ControllerBase;
+import co.jp.xeex.chat.common.AppConstant;
 import co.jp.xeex.chat.common.RestApiEndPoints;
 import co.jp.xeex.chat.exception.BusinessException;
+import co.jp.xeex.chat.token.JwtTokenService;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 
 /**
  * Refeshtoken controller
@@ -16,14 +20,12 @@ import co.jp.xeex.chat.exception.BusinessException;
  * @author v_long
  */
 
-
 @RestController
+@AllArgsConstructor
 public class RefreshTokenController extends ControllerBase<RefreshTokenRequest> {
-    private final RefressTokenService refreshTokenService;
-
-    public RefreshTokenController(RefressTokenService refreshTokenService) {
-        this.refreshTokenService = refreshTokenService;
-    }
+    private RefressTokenService refreshTokenService;
+    private HttpServletResponse httpServletResponse;
+    private JwtTokenService jwtTokenService;
 
     /**
      * Allows use of refresh token in header
@@ -34,12 +36,8 @@ public class RefreshTokenController extends ControllerBase<RefreshTokenRequest> 
     }
 
     @Override
-    public ResponseEntity<?> restApi(@RequestBody RefreshTokenRequest request) throws BusinessException {
-        return null;
-    }
-
     @PostMapping(RestApiEndPoints.REFRESH_TOKEN)
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request)   {
+    public ResponseEntity<?> restApi(@RequestBody RefreshTokenRequest request) {
         try {
             // set default language
             if (null != request && request.lang == null) {
@@ -47,6 +45,12 @@ public class RefreshTokenController extends ControllerBase<RefreshTokenRequest> 
             }
             super.preProcessRequest(request);
             RefreshTokenResponse out = refreshTokenService.execute(request);
+
+            // Setting cookie header
+            String cookie = String.format(AppConstant.COOKIE_VALUE,
+                    out.getAccessToken(), jwtTokenService.getExpirationDate(out.getAccessToken()));
+            httpServletResponse.addHeader(AppConstant.COOKIE_NAME, cookie);
+
             return out != null ? createSuccessResponse(out) : createNullFailResponse();
         } catch (BusinessException e) {
             return super.createErrorResponse(e, HttpStatus.UNAUTHORIZED);

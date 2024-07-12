@@ -14,6 +14,7 @@ import co.jp.xeex.chat.repository.ChatGroupRepository;
 import co.jp.xeex.chat.repository.ChatMessageRepository;
 import co.jp.xeex.chat.repository.FileRepository;
 import co.jp.xeex.chat.repository.MessageTaskRepository;
+import co.jp.xeex.chat.repository.UnreadMessageRepository;
 import co.jp.xeex.chat.util.EnvironmentUtil;
 import co.jp.xeex.chat.util.FileUtil;
 import jakarta.transaction.Transactional;
@@ -46,6 +47,7 @@ public class DeleteFriendServiceImpl extends ServiceBaseImpl<DeleteFriendRequest
     private ChatFileRepository chatFileRepo;
     private FileRepository fileRepo;
     private MessageTaskRepository messageTaskRepo;
+    private UnreadMessageRepository unreadMessageRepo;
     private ChatMessageBroadcastService chatMessageSendService;
     private EnvironmentUtil environmentUtil;
 
@@ -78,6 +80,10 @@ public class DeleteFriendServiceImpl extends ServiceBaseImpl<DeleteFriendRequest
         // Delete chat message
         List<String> chatMessageIds = chatMessageRepo.getListIdByGroup(groupId);
         chatMessageRepo.deleteAllById(chatMessageIds);
+
+        // Delete unread message
+        List<String> unreadMessageIds = unreadMessageRepo.getIdsByGroupId(groupId);
+        unreadMessageRepo.deleteAllById(unreadMessageIds);
 
         // Delete chat group
         chatGroupRepo.findById(groupId).ifPresent(chatGroupRepo::delete);

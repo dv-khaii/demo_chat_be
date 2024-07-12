@@ -5,7 +5,6 @@ import co.jp.xeex.chat.domains.chat.ChatMessageDto;
 import co.jp.xeex.chat.domains.chatmngr.msg.dto.ChatMessageDetailDto;
 import co.jp.xeex.chat.domains.chatmngr.msg.dto.RepplyMessageDetailDto;
 import co.jp.xeex.chat.domains.chatmngr.msg.service.ChatMessageService;
-import co.jp.xeex.chat.domains.chatmngr.repply.mapper.ChatMessageMapper;
 import co.jp.xeex.chat.entity.ChatMessage;
 import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.repository.ChatGroupRepository;
@@ -35,7 +34,6 @@ public class GetRepplyMessageServiceImpl
     // DI
     private ChatMessageRepository chatMessageRepo;
     private ChatGroupRepository chatGroupRepo;
-    private ChatMessageMapper chatMessageMapper;
     private ChatMessageService chatMessageService;
 
     @Override
@@ -53,28 +51,28 @@ public class GetRepplyMessageServiceImpl
         }
 
         // Get messages
-        List<ChatMessageDetailDto> chatMessageDetails;
+        List<ChatMessageDetailDto> chatMessageDetailDtos;
         Optional<ChatMessage> chatMessageOpt = chatMessageRepo.findById(in.getMessageId());
         if (chatMessageOpt.isPresent()) {
             // Get repply message for messageId
             ChatMessage chatMessage = chatMessageOpt.get();
-            chatMessageDetails = chatMessageRepo.findRepplyMessageByValue(in.getRepplyMessageId(),
-                    chatMessage.getCreateAt(),
-                    in.getLimitMessage());
+            chatMessageDetailDtos = chatMessageRepo.findRepplyMessageByValue(in.getRepplyMessageId(),
+                    chatMessage.getCreateAt(), in.getLimitMessage());
         } else {
             // Get latest repply chat message
-            chatMessageDetails = chatMessageRepo.findRepplyMessageById(in.getRepplyMessageId(), in.getLimitMessage());
+            chatMessageDetailDtos = chatMessageRepo.findRepplyMessageById(in.getRepplyMessageId(),
+                    in.getLimitMessage());
         }
 
         // Reverse messages (ASC)
-        Collections.reverse(chatMessageDetails);
+        Collections.reverse(chatMessageDetailDtos);
 
         // Setting repply message
         ChatMessageDto mainChatMsgDto = chatMessageService.getChatMessageDtoByDetailObj(mainRepplyMessageDetail,
                 in.requestBy);
         RepplyMessageDetailDto repplyMessageDetailDto = mainChatMsgDto.repplyMessage;
         if (repplyMessageDetailDto != null) {
-            repplyMessageDetailDto.setMessage(getRepplyMessages(chatMessageDetails));
+            repplyMessageDetailDto.setMessage(getRepplyMessages(chatMessageDetailDtos));
             mainChatMsgDto.repplyMessage = repplyMessageDetailDto;
         }
 
@@ -85,19 +83,18 @@ public class GetRepplyMessageServiceImpl
     }
 
     /**
-     * getRepplyMessages
-     * 
-     * @param chatMessageDetails
-     * @return
+     * Retrieves a list of reply messages based on the provided list of chat message
+     * details.
+     *
+     * @param chatMessageDetailDtos The list of chat message details.
+     * @return The list of reply messages.
      */
-    private List<ChatMessageDto> getRepplyMessages(List<ChatMessageDetailDto> chatMessageDetails) {
+    private List<ChatMessageDto> getRepplyMessages(List<ChatMessageDetailDto> chatMessageDetailDtos) {
         List<ChatMessageDto> resultMessages = new ArrayList<>();
 
         // Add repply message
-        for (ChatMessageDetailDto chatMessageDetail : chatMessageDetails) {
-            ChatMessageDto chatMessageDto = chatMessageMapper.chatMessageDetailToDto(chatMessageDetail);
-            chatMessageDto.chatFiles = chatMessageService.getChatFileDto(chatMessageDetail.getMessageId());
-            resultMessages.add(chatMessageDto);
+        for (ChatMessageDetailDto chatMessageDetailDto : chatMessageDetailDtos) {
+            resultMessages.add(chatMessageService.getChatMessageDtoByDetailObj(chatMessageDetailDto, null));
         }
         return resultMessages;
     }

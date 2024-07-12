@@ -25,4 +25,8 @@ public class FriendDto {
      * The employee code associated with the friend.
      */
     private String empCd;
+    /**
+     * Represents the avatar of a friend.
+     */
+    private String avatar;
 }

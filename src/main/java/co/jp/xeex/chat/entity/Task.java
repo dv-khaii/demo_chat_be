@@ -3,12 +3,13 @@ package co.jp.xeex.chat.entity;
 import java.sql.Timestamp;
 
 import co.jp.xeex.chat.base.EntityBase;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskPriority;
-import co.jp.xeex.chat.domains.taskmngr.task.enums.TaskStatus;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskPriority;
+import co.jp.xeex.chat.domains.taskmngr.enums.TaskStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +22,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@Table(name = "task")
+@Table(name = "task", indexes = { @Index(name = "idx_group_id", columnList = "group_id") })
 public class Task extends EntityBase {
     @Column(name = "task_name", nullable = false)
     private String taskName;

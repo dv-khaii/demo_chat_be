@@ -50,8 +50,7 @@ public class AddFriendServiceImpl extends ServiceBaseImpl<AddFriendRequest, AddF
         List<String> oldFriends = new ArrayList<>();
         if (!oldFriendObjs.isEmpty()) {
             // Filter old friend
-            oldFriends = oldFriendObjs.stream().map(FriendDto::getEmpCd)
-                    .collect(Collectors.toList());
+            oldFriends = oldFriendObjs.stream().map(FriendDto::getEmpCd).collect(Collectors.toList());
         }
 
         // Setting notify
@@ -61,13 +60,12 @@ public class AddFriendServiceImpl extends ServiceBaseImpl<AddFriendRequest, AddF
         notifyMessage.lang = in.lang;
         notifyMessage.action = ChatAction.ADD_FRIEND;
 
+        // Add new friend
         List<FriendDetailDto> newFriendDetails = new ArrayList<>();
         for (String empCdFriend : in.empCdFriends) {
             // Validation member
             if (userRepo.findByUserName(empCdFriend) == null) {
-                throw new BusinessException(ADD_FRIEND_ERR_USER_IS_NOT_EXISTED,
-                        new String[] { empCdFriend },
-                        in.lang);
+                throw new BusinessException(ADD_FRIEND_ERR_USER_IS_NOT_EXISTED, new String[] { empCdFriend }, in.lang);
             }
 
             // Add friend
@@ -98,7 +96,6 @@ public class AddFriendServiceImpl extends ServiceBaseImpl<AddFriendRequest, AddF
                 FriendDetailDto friendDetailDto = new FriendDetailDto();
                 friendDetailDto.setGroupId(chatGroup.getId());
                 friendDetailDto.setEmpCd(empCdFriend);
-                friendDetailDto.setStartMessageId(null);
                 friendDetailDto.setAvatar(userService.getUrlAvatarByEmpCd(empCdFriend));
                 newFriendDetails.add(friendDetailDto);
 

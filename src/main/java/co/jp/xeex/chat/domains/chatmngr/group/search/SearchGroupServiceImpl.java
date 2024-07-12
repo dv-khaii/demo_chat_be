@@ -7,7 +7,6 @@ import co.jp.xeex.chat.entity.UnreadMessage;
 import co.jp.xeex.chat.exception.BusinessException;
 import co.jp.xeex.chat.domains.chatmngr.group.dto.ChatGroupDetailDto;
 import co.jp.xeex.chat.repository.ChatGroupRepository;
-import co.jp.xeex.chat.repository.ChatMessageRepository;
 import co.jp.xeex.chat.repository.UnreadMessageRepository;
 import lombok.AllArgsConstructor;
 
@@ -29,7 +28,6 @@ public class SearchGroupServiceImpl extends ServiceBaseImpl<SearchGroupRequest, 
 
     // repository uses
     private ChatGroupRepository chatGroupRepo;
-    private ChatMessageRepository chatMessageRepo;
     private UnreadMessageRepository unreadMessageRepository;
 
     @Override
@@ -64,7 +62,6 @@ public class SearchGroupServiceImpl extends ServiceBaseImpl<SearchGroupRequest, 
             ChatGroupDetailDto chatGroupDetailDto = new ChatGroupDetailDto();
             chatGroupDetailDto.setGroupId(chatGroupDto.getGroupId());
             chatGroupDetailDto.setGroupName(chatGroupDto.getGroupName());
-            chatGroupDetailDto.setStartMessageId(chatMessageRepo.getStartMessageIdByGroup(chatGroupDto.getGroupId()));
 
             // Get unread count
             UnreadMessage unreadMessage = unreadMessageRepository.getUnreadMessage(empCd, chatGroupDto.getGroupId(),

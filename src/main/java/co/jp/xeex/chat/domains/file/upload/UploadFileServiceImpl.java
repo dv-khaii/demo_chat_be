@@ -41,7 +41,7 @@ public class UploadFileServiceImpl extends ServiceBaseImpl<UploadFileRequest, Up
     private static final String UPLOAD_FILE_ERR_FILE_TYPE_IMAGE_INCORRECT = "UPLOAD_FILE_ERR_FILE_TYPE_IMAGE_INCORRECT";
 
     // constants
-    private static final String[] IMAGE_TYPES = new String[] { "png", "jpg", "jpeg", "svg" };
+    private static final String[] IMAGE_TYPES = { "png", "jpg", "jpeg", "svg" };
 
     // DI
     private UserRepository userRepo;
@@ -60,7 +60,6 @@ public class UploadFileServiceImpl extends ServiceBaseImpl<UploadFileRequest, Up
                 : Paths.get(environmentUtil.rootUploadPath, AppConstant.PATH_TEMP_PREFIX, in.requestBy);
 
         // Upload files
-        String domain = environmentUtil.getDomain();
         List<FileDto> files = new ArrayList<>();
         for (MultipartFile multipartFile : in.getFiles()) {
             String generateStoreFileName;
@@ -95,8 +94,8 @@ public class UploadFileServiceImpl extends ServiceBaseImpl<UploadFileRequest, Up
                 fileRepo.saveAndFlush(file);
 
                 // Link avatar
-                String fileUrl = String.format(AppConstant.FILE_URL, domain, AppConstant.PATH_AVATAR_PREFIX,
-                        generateStoreFileName);
+                String fileUrl = String.format(AppConstant.FILE_URL, environmentUtil.fileHost,
+                        AppConstant.PATH_AVATAR_PREFIX, generateStoreFileName);
                 fileDto.setImageUrl(fileUrl);
             }
 
@@ -178,9 +177,7 @@ public class UploadFileServiceImpl extends ServiceBaseImpl<UploadFileRequest, Up
             Path targetPath = FileUtil.getTargetPath(environmentUtil.rootUploadPath, AppConstant.PATH_AVATAR_PREFIX,
                     oldAvatarFile.getCreateBy(), null);
             targetPath = targetPath.resolve(Paths.get(oldAvatar));
-            if (Files.exists(targetPath)) {
-                Files.delete(targetPath);
-            }
+            Files.deleteIfExists(targetPath);
         }
     }
 }

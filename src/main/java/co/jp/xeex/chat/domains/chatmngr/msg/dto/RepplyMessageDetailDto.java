@@ -21,11 +21,6 @@ public class RepplyMessageDetailDto {
      */
     private String lastRepply;
     /**
-     * message start in group chat
-     * client use to check lazy load message history
-     */
-    private String startMessageId;
-    /**
      * The number of unread messages.
      */
     private Integer unreadCount = 0;

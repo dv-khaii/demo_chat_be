@@ -16,5 +16,7 @@ public interface TokenClaimData {
 
     String getLang();
 
+    String [] getRoles();
+
     TokenType getTokenType();
 }

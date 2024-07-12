@@ -6,7 +6,6 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -32,17 +31,19 @@ public class SocketHandshakeInterceptor implements HandshakeInterceptor {
         this.jwtTokenService = jwtTokenService;
     }
 
-    @SuppressWarnings("null")
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
             Map<String, Object> attributes) throws Exception {
         /*
-         * remark
-         * The WebSocket protocol does not support custom headers during Handshake.
-         * (This is a limitation of the WebSocket protocol)
-         * The client side cannot send headers during Handshake.
+         * remark The WebSocket protocol does not support custom headers during
+         * Handshake.
+         * (This is a limitation of the WebSocket protocol) The client side cannot send
+         * headers
+         * during Handshake.
          * This means that tokens cannot be sent in the headers of WebSocket requests.
-         * but must send the token in the query string.
+         * but
+         * must send the token in
+         * the query string.
          */
         ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
         String token = servletRequest.getServletRequest().getParameter("token");
@@ -57,7 +58,6 @@ public class SocketHandshakeInterceptor implements HandshakeInterceptor {
             }
 
             attributes.put("token", tokenData);
-            log.info("Handshake successful for user [" + this.tokenData.getUserName() + "]");
             return true;
         }
         // if token is invalid, throw an exception
@@ -66,7 +66,6 @@ public class SocketHandshakeInterceptor implements HandshakeInterceptor {
         throw new Exception(message);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
             Exception exception) {

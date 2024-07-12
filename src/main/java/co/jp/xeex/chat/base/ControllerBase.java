@@ -1,15 +1,8 @@
 package co.jp.xeex.chat.base;
 
-import co.jp.xeex.chat.exception.BusinessException;
-import co.jp.xeex.chat.exception.CommonException;
-import co.jp.xeex.chat.lang.resource.ResourceMessageItem;
-import co.jp.xeex.chat.lang.resource.ResourceMessageLevels;
-import co.jp.xeex.chat.lang.resource.ResourceMessageTypes;
-import co.jp.xeex.chat.token.TokenClaimData;
-import co.jp.xeex.chat.token.TokenType;
-import co.jp.xeex.chat.validation.DtoValidateService;
-import com.google.gson.Gson;
-import lombok.extern.log4j.Log4j;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +11,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
-import java.util.ArrayList;
-import java.util.List;
+
+import co.jp.xeex.chat.exception.BusinessException;
+import co.jp.xeex.chat.exception.CommonException;
+import co.jp.xeex.chat.lang.resource.ResourceMessageItem;
+import co.jp.xeex.chat.lang.resource.ResourceMessageLevels;
+import co.jp.xeex.chat.lang.resource.ResourceMessageTypes;
+import co.jp.xeex.chat.token.TokenClaimData;
+import co.jp.xeex.chat.token.TokenType;
+import co.jp.xeex.chat.util.ConvertUtil;
+import co.jp.xeex.chat.validation.DtoValidateService;
+import lombok.extern.log4j.Log4j;
 
 /**
  * This class serves as a base class for REST controllers.<br>
@@ -46,7 +48,8 @@ public abstract class ControllerBase<R extends RequestBase> {
     protected TokenClaimData claimData;
 
     /**
-     * Allows or disables the controller to be used the Refresh Token to access api.<br>
+     * Allows or disables the controller to be used the Refresh Token to access
+     * api.<br>
      * Default: FALSE (donot allow)<br>
      * In most cases, the API will not allow the use of refresh tokens to access
      * API. So this value will be true to throw the error when client use refresh
@@ -99,9 +102,8 @@ public abstract class ControllerBase<R extends RequestBase> {
             }
             return;// do nothing
         }
-        //
-        String json = new Gson().toJson(dto);
-        log.info("preProcessRequest: " + json);
+        //        
+        log.info("Checking request: "+ dto.getClass().getSimpleName() + " = " + ConvertUtil.toJson(dto));
         // keep origin dot's values
         this.lang = dto.lang;
         this.currentUser = dto.requestBy;
@@ -128,11 +130,11 @@ public abstract class ControllerBase<R extends RequestBase> {
             }
         }
         //
-        log.info("Validate request: " + json);
+        log.debug("Validate request...");
         this.validateRequest(dto);
 
         //
-        log.info("Check authorization: " + json);
+        log.debug("Check authorization...");
         this.checkAuthoriton(dto);
     }
 

@@ -1,0 +1,9 @@
+.idea
+log
+dml
+uploads
+.env.sample
+.gitgnore
+.Jenkinsfile
+*.MD
+

@@ -2,7 +2,7 @@ package co.jp.xeex.chat.domains.taskmngr.task.get;
 
 import java.util.List;
 
-import co.jp.xeex.chat.domains.taskmngr.task.dto.TaskDto;
+import co.jp.xeex.chat.domains.taskmngr.dto.TaskDto;
 import lombok.Data;
 
 /**
@@ -12,6 +12,12 @@ import lombok.Data;
  */
 @Data
 public class GetTaskResponse {
-    private Integer totalTask;
-    private List<TaskDto> tasks;
+    /**
+     * Represents the total number of tasks.
+     */
+    private Long taskCount;
+    /**
+     * Represents a list of tasks.
+     */
+    private List<TaskDto> taskList;
 }

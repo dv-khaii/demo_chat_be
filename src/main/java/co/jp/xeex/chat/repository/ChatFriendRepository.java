@@ -27,16 +27,18 @@ public interface ChatFriendRepository extends RepositoryBase<ChatFriend, String>
     @Query(value = "SELECT new co.jp.xeex.chat.domains.chatmngr.friend.dto.FriendDto(" +
             "   t1.groupId, " +
             "   t2.groupName, " +
-            "   t1.empCd2) " +
+            "   t1.empCd2, " +
+            "   t3.avatar) " +
             " FROM " +
             "   ChatFriend t1, " +
-            "   ChatGroup t2 " +
+            "   ChatGroup t2, " +
+            "   User t3 " +
             " WHERE " +
             "   t1.groupId = t2.id " +
             "   AND t1.empCd1 = :empCd " +
+            "   AND t1.empCd2 = t3.empCd " +
             "   AND t1.empCd2 LIKE %:searchValue% ")
-    List<FriendDto> findByValue(@Param("empCd") String empcd,
-            @Param("searchValue") String searchValue);
+    List<FriendDto> findByValue(@Param("empCd") String empcd, @Param("searchValue") String searchValue);
 
     /**
      * Find friend
